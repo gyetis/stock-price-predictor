@@ -1,7 +1,8 @@
+import { dates } from './utils/dates.js';
+
 const tickersArr = [];
 
 const generateReportBtn = document.querySelector('.generate-report-btn');
-
 generateReportBtn.addEventListener('click', fetchStockData);
 
 document.getElementById('ticker-input-form').addEventListener('submit', (e) => {
@@ -39,4 +40,40 @@ const apiMessage = document.getElementById('api-message');
 async function fetchStockData() {
     document.querySelector('.action-panel').style.display = 'none';
     loadingArea.style.display = 'flex';
+
+    try {
+        const stockData = await Promise.all(
+            tickersArr.map(async (ticker) => {
+                const response = await fetch(
+                    `/api/stocks/${ticker}?from=${dates.startDate}&to=${dates.endDate}`
+                );
+                const data = await response.json();
+                if (response.status === 200 && data) {
+                    apiMessage.innerText = 'Creating report...';
+                    return data;
+                } else {
+                    loadingArea.innerText =
+                        'There was an error fetching stock data.';
+                }
+            })
+        );
+        fetchReport(stockData);
+    } catch (err) {
+        loadingArea.innerText = 'There was an error fetching stock data.';
+        console.error('error: ', err);
+    }
+}
+
+async function fetchReport(data) {
+    console.log(data);
+    /**
+     * Challenge:
+     * 1. Use the OpenAI API to generate a report advising
+     * on whether to buy or sell the shares based on the data
+     * that comes in as a parameter.
+     *
+     * 🎁 See hint.md for help!
+     *
+     * 🏆 Bonus points: use a try catch to handle errors.
+     * **/
 }
