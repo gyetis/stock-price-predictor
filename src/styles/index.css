@@ -1,0 +1,171 @@
+/* 
+Evergreen: #042A2B
+Pacific blue: #5EB1BF
+Neon ice: #54F2F2
+White: #FCFCFC
+Banana cream: #F4E04D
+*/
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(#5eb1bf, #fcfcfc);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+}
+
+.action-panel,
+.output-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    height: 350px;
+}
+
+.output-panel {
+    display: none;
+    justify-content: flex-start;
+    border: 2px solid;
+    padding: 1em 2em;
+}
+
+.loading-panel {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 400px;
+    text-align: center;
+}
+
+.output-panel p {
+    overflow-y: scroll;
+}
+
+/* text */
+
+h2 {
+    text-align: center;
+    font-weight: 400;
+    margin-top: -26px;
+    background-color: #fcfcfc;
+    padding: 0 10px;
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+p.tag-line {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.ticker-choice-display {
+    display: flex;
+    align-items: center;
+    height: 3em;
+}
+
+/* controls */
+
+form {
+    width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    text-align: center;
+    font-size: 15px;
+    width: 80%;
+}
+
+.form-input-control {
+    margin-top: 40px;
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+input[type='text'] {
+    padding: 15px;
+    background: #fcfcfc;
+    border: 2px solid #042a2b;
+    border-radius: 10px;
+}
+
+.add-ticker-btn {
+    display: flex;
+    align-items: center;
+    background: #fcfcfc;
+    border: 2px solid #042a2b;
+    border-radius: 10px;
+    font-size: 3em;
+    padding: 15px;
+    cursor: pointer;
+}
+
+.add-ticker-svg {
+    width: 14px;
+}
+
+.generate-report-btn {
+    width: 70%;
+    padding: 1em 1.5em;
+    cursor: pointer;
+    font-family: 'Poppins', sans;
+    border: 2px solid #042a2b;
+    border-radius: 10px;
+    background-color: #54f2f2;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    font-size: 105%;
+}
+
+/* ticker display (ensure comma separated) */
+
+.ticker {
+    margin: 0 0.1em;
+    content: '';
+}
+
+.ticker:after {
+    content: ',';
+}
+
+.ticker:last-child::after {
+    content: '';
+}
+
+/* footer */
+
+footer {
+    font-size: 14px;
+    text-align: center;
+}
+
+/* stop ugly scroll bar on some browsers */
+.output-panel p::-webkit-scrollbar {
+    display: none;
+}
+
+.output-panel p::-moz-scrollbar {
+    display: none;
+}
