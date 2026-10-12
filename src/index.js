@@ -3,12 +3,22 @@ import { dates } from './utils/dates.js';
 const tickersArr = [];
 
 const generateReportBtn = document.querySelector('.generate-report-btn');
-generateReportBtn.addEventListener('click', fetchStockData);
+const inputForm = document.getElementById('ticker-input-form');
+const tickerInput = document.getElementById('ticker-input');
+const actionPanel = document.querySelector('.action-panel');
+const loadingArea = document.querySelector('.loading-panel');
+const outputPanel = document.querySelector('.output-panel');
+const apiMessage = document.getElementById('api-message');
+const goBackBtn = document.querySelector('.go-back-btn');
 
-document.getElementById('ticker-input-form').addEventListener('submit', (e) => {
+generateReportBtn.addEventListener('click', fetchStockData);
+inputForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const tickerInput = document.getElementById('ticker-input');
-    console.log('Value entered: ', tickerInput.value);
+    processTickers();
+});
+goBackBtn.addEventListener('click', goBack);
+
+function processTickers() {
     if (tickerInput.value.length > 2) {
         generateReportBtn.disabled = false;
         const newTickerStr = tickerInput.value;
@@ -21,7 +31,7 @@ document.getElementById('ticker-input-form').addEventListener('submit', (e) => {
         label.textContent =
             'You must add at least one ticker. A ticker is a 3 letter or more code for a stock. E.g TSLA for Tesla.';
     }
-});
+}
 
 function renderTickers() {
     const tickersDiv = document.querySelector('.ticker-choice-display');
@@ -34,13 +44,9 @@ function renderTickers() {
     });
 }
 
-const loadingArea = document.querySelector('.loading-panel');
-const apiMessage = document.getElementById('api-message');
-
 async function fetchStockData() {
-    document.querySelector('.action-panel').style.display = 'none';
+    actionPanel.style.display = 'none';
     loadingArea.style.display = 'flex';
-
     try {
         const stockData = await Promise.all(
             tickersArr.map(async (ticker) => {
@@ -64,16 +70,41 @@ async function fetchStockData() {
     }
 }
 
-async function fetchReport(data) {
-    console.log(data);
-    /**
-     * Challenge:
-     * 1. Use the OpenAI API to generate a report advising
-     * on whether to buy or sell the shares based on the data
-     * that comes in as a parameter.
-     *
-     * 🎁 See hint.md for help!
-     *
-     * 🏆 Bonus points: use a try catch to handle errors.
-     * **/
+async function fetchReport(stockData) {
+    const tickerNames = stockData.map((ticker) => ticker.ticker);
+    try {
+        const response = await fetch('/api/googlegenai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: `Give the user a prediction of the stocks with the given ${tickerNames}, and advice them whether to buy or sell. Be friendly and do not user more than 5 sentences.`,
+            }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(
+                data.error || `Request failed (${response.status})`
+            );
+        }
+        console.log('Data: ', data);
+        renderReport(data.text);
+    } catch (error) {
+        console.error('Error fetching stock report:', error);
+        loadingArea.innerText = 'There was an error fetching the stock report.';
+    }
+}
+
+function renderReport(output) {
+    loadingArea.style.display = 'none';
+    outputPanel.style.display = 'flex';
+    const reportResult = document.querySelector('.report-result');
+    reportResult.textContent = output;
+    reportResult.style.display = 'flex';
+}
+
+function goBack() {
+    tickerInput.textContent = 'Your tickers will appear here...';
+    actionPanel.style.display = 'flex';
+    loadingArea.style.display = 'none';
+    outputPanel.style.display = 'none';
 }
