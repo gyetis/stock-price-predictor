@@ -2,6 +2,11 @@
 
 Web app project that uses OpenAI models to generate a report based on stock tickers.
 
+## TODO
+
+- [ ] Get ticker names from Massive API
+- [ ] Convert ticker input field into a dropdown with the values coming from Massive API
+
 ## Prerequests
 
 You are required to have a Massive account (https://massive.com) and a Google AI Studio account (https://aistudio.google.com). If you already have a Google acount, this should automatically direct you to the platform.
