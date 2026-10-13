@@ -1,9 +1,10 @@
 import { dates } from './utils/dates.js';
 
-const tickersArr = [];
+let tickersArr = [];
 
 const generateReportBtn = document.querySelector('.generate-report-btn');
 const inputForm = document.getElementById('ticker-input-form');
+const tickersDiv = document.querySelector('.ticker-choice-display');
 const tickerInput = document.getElementById('ticker-input');
 const actionPanel = document.querySelector('.action-panel');
 const loadingArea = document.querySelector('.loading-panel');
@@ -34,7 +35,6 @@ function processTickers() {
 }
 
 function renderTickers() {
-    const tickersDiv = document.querySelector('.ticker-choice-display');
     tickersDiv.innerHTML = '';
     tickersArr.forEach((ticker) => {
         const newTickerSpan = document.createElement('span');
@@ -71,14 +71,25 @@ async function fetchStockData() {
 }
 
 async function fetchReport(stockData) {
-    const tickerNames = stockData.map((ticker) => ticker.ticker);
+    const contents = [
+        {
+            role: 'model',
+            parts: [
+                {
+                    text: "You are a trading guru. Given the stock price data below, write a report of no more than 100 words describing each stock's performance and recommending whether to buy, hold, or sell.",
+                },
+            ],
+        },
+        {
+            role: 'user',
+            parts: [{ text: JSON.stringify(stockData) }],
+        },
+    ];
     try {
         const response = await fetch('/api/googlegenai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: `Give the user a prediction of the stocks with the given ${tickerNames}, and advice them whether to buy or sell. Be friendly and do not user more than 5 sentences.`,
-            }),
+            body: JSON.stringify({ contents }),
         });
         const data = await response.json();
         if (!response.ok) {
@@ -103,7 +114,10 @@ function renderReport(output) {
 }
 
 function goBack() {
-    tickerInput.textContent = 'Your tickers will appear here...';
+    tickersArr = [];
+    tickersDiv.innerHTML = '';
+    tickersDiv.textContent = 'Your tickers will appear here...';
+    generateReportBtn.disabled = true;
     actionPanel.style.display = 'flex';
     loadingArea.style.display = 'none';
     outputPanel.style.display = 'none';

@@ -32,13 +32,11 @@ app.get('/api/stocks/:ticker', async (req, res) => {
 });
 
 app.post('/api/googlegenai', async (req, res) => {
-    const { contents } = req.body;
-    console.info('Received request for Google Gen AI');
-
-    if (typeof contents !== 'string' || !contents.trim()) {
+    const { contents } = req.body || {};
+    if (!Array.isArray(contents) || contents.length === 0) {
         return res
             .status(400)
-            .json({ error: 'A non-empty contents string is required.' });
+            .json({ error: 'A non-empty contents array is required.' });
     }
 
     try {
@@ -46,7 +44,6 @@ app.post('/api/googlegenai', async (req, res) => {
             model: 'gemini-3.5-flash-lite',
             contents,
         });
-        console.log('Google response: ', response);
         res.json({ text: response.text });
     } catch (error) {
         console.error('Google Gen AI request failed:', error);
