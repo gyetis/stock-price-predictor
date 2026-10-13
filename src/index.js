@@ -71,25 +71,15 @@ async function fetchStockData() {
 }
 
 async function fetchReport(stockData) {
-    const contents = [
-        {
-            role: 'model',
-            parts: [
-                {
-                    text: "You are a trading guru. Given the stock price data below, write a report of no more than 100 words describing each stock's performance and recommending whether to buy, hold, or sell.",
-                },
-            ],
-        },
-        {
-            role: 'user',
-            parts: [{ text: JSON.stringify(stockData) }],
-        },
-    ];
     try {
         const response = await fetch('/api/googlegenai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents }),
+            body: JSON.stringify({
+                input: JSON.stringify(stockData),
+                systemInstruction:
+                    "You are a trading guru. Given the stock price data below, write a report of no more than 100 words describing each stock's performance and recommending whether to buy, hold, or sell.",
+            }),
         });
         const data = await response.json();
         if (!response.ok) {

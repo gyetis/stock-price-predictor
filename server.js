@@ -7,7 +7,7 @@ const app = express();
 const PORT = 3000;
 const ai = new genai.GoogleGenAI({
     apiKey: process.env.GOOGLE_AI_STUDIO_API_KEY,
-    apiVersion: 'v1alpha',
+    apiVersion: 'v1',
 });
 
 // Serve HTML, CSS and browser-side JavaScript
@@ -32,19 +32,20 @@ app.get('/api/stocks/:ticker', async (req, res) => {
 });
 
 app.post('/api/googlegenai', async (req, res) => {
-    const { contents } = req.body || {};
-    if (!Array.isArray(contents) || contents.length === 0) {
+    const { input, systemInstruction } = req.body || {};
+    if (typeof input !== 'string' || input.length === 0) {
         return res
             .status(400)
-            .json({ error: 'A non-empty contents array is required.' });
+            .json({ error: 'A non-empty input is required.' });
     }
 
     try {
-        const response = await ai.models.generateContent({
+        const response = await ai.interactions.create({
             model: 'gemini-3.5-flash-lite',
-            contents,
+            input: input,
+            system_instruction: systemInstruction,
         });
-        res.json({ text: response.text });
+        res.json({ text: response.output_text });
     } catch (error) {
         console.error('Google Gen AI request failed:', error);
         const status = Number.isInteger(error.status) ? error.status : 500;
